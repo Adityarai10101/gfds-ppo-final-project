@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 from torch.distributions.categorical import Categorical
+from config import Config
 
 class ActorCriticNetwork(nn.Module):
     def __init__(self, input_dim, action_dim):
@@ -93,13 +94,13 @@ class PPOTrainer:
         return returns, advantages
     
     def update(self, epochs=10):
-        observations = torch.FloatTensor(np.array(self.observations))
-        actions = torch.LongTensor(self.actions)
-        old_log_probs = torch.FloatTensor(self.log_probs)
+        observations = torch.FloatTensor(np.array(self.observations)).to(Config.DEVICE)
+        actions = torch.LongTensor(self.actions).to(Config.DEVICE)
+        old_log_probs = torch.FloatTensor(self.log_probs).to(Config.DEVICE)
         
         returns, advantages = self.compute_returns_and_advantages()
-        returns = torch.FloatTensor(returns)
-        advantages = torch.FloatTensor(advantages)
+        returns = torch.FloatTensor(returns).to(Config.DEVICE)
+        advantages = torch.FloatTensor(advantages).to(Config.DEVICE)
         
         advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-8)
         
